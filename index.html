@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="./assets/main.css">
+    <title>句読点変換サービス</title>
+</head>
+<body>
+
+    <!-- jQueryの読み込み -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    
+    <h1>句読点変換サービス</h1>
+
+    <div class="">
+        以下に文章を入力してください<br>
+        <textarea name="input_text" rows="10" cols="50" id="inputText"></textarea><br>
+    </div>
+
+    <div class="base">
+        <input type="button" value="変換" id="transformText" class="button-decoration">
+        <input type="button" value="リセット" id="resetText" class="button-decoration">
+    </div>
+
+    <br>
+
+    <div class="base">
+        <div class="output-textarea" id="msg"></div>
+        <div class="left-column">◆文字数（スペース込み）</div>
+        <div class="right-column" id="include_space_num"></div>
+        <br>
+        <div class="left-column">◆文字数（スペース無視）</div>
+        <div class="right-column" id="exclude_space_num"></div>
+        <br>
+        <div class="left-column">◆行数</div>
+        <div class="right-column" id="lines_num"></div>
+        <br>
+    </div>
+     
+    <!-- ボタンが押された際の処理を記述 -->
+    <script>
+        // サイトの表示の際に最初に一回のみ呼び出される関数
+        window.onload = function() {
+            include_space_num.innerText = 0;
+            exclude_space_num.innerText = 0;
+            lines_num.innerText = 0;
+        }
+
+        // スペースの数をカウントし、全体の数からひく
+        function CntSpace(text) {
+            var space_cnt = (text.match(new RegExp(" ", "g")) || []).length;
+            space_cnt += (text.match(new RegExp("　", "g")) || []).length;
+            exclude_space_num.innerText = text.length - space_cnt;
+        }
+
+        // 行数をカウントする
+        function CntLins(text) {
+            var line_cnt = (text.match(new RegExp("\n", "g")) || []).length;
+            lines_num.innerText = 0;
+            if(text.length != 0) lines_num.innerText = line_cnt + 1;
+        }
+
+        // 句読点を変換する
+        function TransformPunctuation(text) {
+            text = text.replace(/、/g, ',');
+            text = text.replace(/。/g, '.');
+            msg.innerText = text;
+        }
+
+        function transformButtonClicked() {
+            var text = inputText.value;
+            TransformPunctuation(text);
+            include_space_num.innerText = text.length;
+            CntSpace(text);
+            CntLins(text);
+        }
+
+        function resetButtonClicked() {
+            msg.innerText = "";
+            inputText.value = "";
+            include_space_num.innerText = 0;
+            exclude_space_num.innerText = 0;
+            lines_num.innerText = 0;
+        }
+
+        let reviewTextarea = document.getElementById('inputText');
+        reviewTextarea.value = 'ここに文章、を記入してください。';
+        let msg = document.getElementById('msg');
+
+        let transformButton = document.getElementById('transformText');
+        transformButton.addEventListener('click', transformButtonClicked);
+
+        let resetButton = document.getElementById('resetText');
+        resetButton.addEventListener('click', resetButtonClicked);
+
+    </script>
+
+</body>
+</html>
